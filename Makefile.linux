@@ -1,0 +1,44 @@
+# Common flags
+LDFLAGS_COMMON = -lGLEW -lGL -lGLU -lglut -lstdc++
+CFLAGS_COMMON  = -c -Wall -I./ -O3 -DGL_SILENCE_DEPRECATION
+
+# Compiler
+CC      = g++
+CFLAGS  = ${CFLAGS_COMMON}
+LDFLAGS = ${LDFLAGS_COMMON}
+
+# executable names
+SIMULATOR = bin/frost
+RENDERER = bin/render
+
+# Source files
+SIMULATOR_SRC = simulators/ca-frost/sim/main.cpp simulators/ca-frost/sim/FROST.cpp simulators/ca-frost/sim/FROST_FAST.cpp simulators/ca-frost/util/SHADER.cpp
+RENDERER_SRC = simulators/ca-frost/util/RENDER_DENSITY.cpp simulators/ca-frost/util/SHADER.cpp
+
+SIMULATOR_OBJ = $(SIMULATOR_SRC:.cpp=.o)
+RENDERER_OBJ = $(RENDERER_SRC:.cpp=.o)
+
+# Default target
+all: bin media $(SIMULATOR) $(RENDERER)
+
+bin:
+	mkdir -p bin
+
+media:
+	mkdir -p media
+
+# Build rules
+$(SIMULATOR): $(SIMULATOR_OBJ)
+	$(CC) $(SIMULATOR_OBJ) $(LDFLAGS) -o $@
+
+# Renderer build
+$(RENDERER): $(RENDERER_OBJ)
+	$(CC) $(RENDERER_OBJ) $(LDFLAGS) -o $@
+
+# Generic rule for .cpp -> .o
+.cpp.o:
+	$(CC) $(CFLAGS) $< -o $@
+
+# Clean rule
+clean:
+	rm -f simulators/ca-frost/sim/*.o simulators/ca-frost/util/*.o $(SIMULATOR) $(RENDERER)
